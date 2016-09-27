@@ -17,12 +17,12 @@
  * along with iBoot32Patcher.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* iBoot32Patcher.c
+/* iBoot32Patcher
  *
  * Universal 32-bit iBoot patcher for iPhone OS 2.0 --> iOS 10
  *
  * Build:
- * clang iBoot32Patcher.c functions.c -I. -o iBoot32Patcher
+ * clang iBoot32Patcher.c finders.c functions.c patchers.c -Wno-multichar -I. -o iBoot32Patcher
  *
  * Usage:
  * ./iBoot32Patcher iBoot.n49.RELEASE.dfu.decrypted iBoot.n49.RELEASE.dfu.patched
