@@ -93,6 +93,20 @@ int main(int argc, char** argv) {
 	fread(iboot_in.buf, 1, iboot_in.len, fp);
 	fflush(fp);
 	fclose(fp);
+	
+	uint32_t image_magic = *(uint32_t*)iboot_in.buf;
+	
+	if(image_magic == IMAGE3_MAGIC) {
+		printf("%s: The supplied image appears to be in an img3 container. Please strip it.\n", __FUNCTION__);
+		free(iboot_in.buf);
+		return -1;
+	}
+
+	if(image_magic != IBOOT32_RESET_VECTOR_BYTES) {
+		printf("%s: The supplied image is not a valid 32-bit iBoot.\n", __FUNCTION__);
+		free(iboot_in.buf);
+		return -1;
+	}
 
 	const char* iboot_vers_str = (iboot_in.buf + IBOOT_VERS_STR_OFFSET);
 

@@ -29,7 +29,9 @@
 #define GET_IBOOT_FILE_OFFSET(iboot_in, x) (x - (uintptr_t) iboot_in->buf)
 #define GET_IBOOT_ADDR(iboot_in, x) ((x - (uintptr_t) iboot_in->buf) + get_iboot_base_address(iboot_in->buf))
 
+#define IMAGE3_MAGIC 'Img3'
 #define IBOOT_VERS_STR_OFFSET 0x286
+#define IBOOT32_RESET_VECTOR_BYTES bswap32(0x0E0000EA)
 
 struct iboot_img {
 	void* buf;
