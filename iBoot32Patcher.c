@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
 	uint32_t image_magic = *(uint32_t*)iboot_in.buf;
 	
 	if(image_magic == IMAGE3_MAGIC) {
-		printf("%s: The supplied image appears to be in an img3 container. Please strip it.\n", __FUNCTION__);
+		printf("%s: The supplied image appears to be in an img3 container. Please ensure that the image is decrypted and that the img3 header is stripped.\n", __FUNCTION__);
 		free(iboot_in.buf);
 		return -1;
 	}
