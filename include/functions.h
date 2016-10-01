@@ -26,6 +26,11 @@
 #define ENTERING_RECOVERY_CONSOLE "Entering recovery mode, starting command prompt"
 #define KERNELCACHE_PREP_STRING "kernelcache prepped"
 
+#ifndef memmem
+#define memmem _memmem
+void* _memmem(const void* mem, int size, const void* pat, int size2);
+#endif
+
 void* bl_search_down(const void* start_addr, int len);
 void* iboot_memmem(struct iboot_img* iboot_in, void* pat);
 void* find_last_LDR_rd(uintptr_t start, size_t len, const uint8_t rd);
@@ -52,4 +57,5 @@ void* push_r4_r7_lr_search_up(const void* start_addr, int len);
 void* resolve_bl32(const void* bl);
 void set_MOVT_W_insn_val(void* offset, uint8_t rd, uint16_t val);
 void set_MOVW_insn_val(void* offset, uint8_t rd, uint16_t val);
+
 #endif

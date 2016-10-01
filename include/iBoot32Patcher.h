@@ -25,9 +25,10 @@
 #include <string.h>
 
 #define bswap32 __builtin_bswap32
+#define bswap16 __builtin_bswap16
 
 #define GET_IBOOT_FILE_OFFSET(iboot_in, x) (x - (uintptr_t) iboot_in->buf)
-#define GET_IBOOT_ADDR(iboot_in, x) ((x - (uintptr_t) iboot_in->buf) + get_iboot_base_address(iboot_in->buf))
+#define GET_IBOOT_ADDR(iboot_in, x) (x - (uintptr_t) iboot_in->buf) + get_iboot_base_address(iboot_in->buf)
 
 #define IMAGE3_MAGIC 'Img3'
 #define IBOOT_VERS_STR_OFFSET 0x286

@@ -17,9 +17,10 @@
  * along with iBoot32Patcher.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <include/iBoot32Patcher.h>
-#include <include/functions.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <include/functions.h>
+#include <include/iBoot32Patcher.h>
 
 void* bl_search_down(const void* start_addr, int len) {
 	return pattern_search(start_addr, len, 0xD000F000, 0xD000F800, 1);
@@ -43,7 +44,7 @@ void* find_last_LDR_rd(uintptr_t start, size_t len, const uint8_t rd) {
 void* find_next_bl_insn_to(struct iboot_img* iboot_in, uint32_t addr) {
 	for(int i = 0; i < iboot_in->len - sizeof(uint32_t); i++) {
 		void* possible_bl = resolve_bl32(iboot_in->buf + i);
-		uint32_t resolved = (uint32_t) GET_IBOOT_FILE_OFFSET(iboot_in, possible_bl);
+		uint32_t resolved = (uintptr_t) GET_IBOOT_FILE_OFFSET(iboot_in, possible_bl);
 		if(resolved == addr) {
 			return (void*) (iboot_in->buf + i);
 		}
@@ -62,7 +63,7 @@ void* find_next_CMP_insn_with_value(void* start, size_t len, const uint8_t val) 
 }
 
 void* find_next_LDR_insn_with_value(struct iboot_img* iboot_in, uint32_t value) {
-	void* ldr_xref = memmem(iboot_in->buf, iboot_in->len, &value, sizeof(value));
+	void* ldr_xref = (void*) memmem(iboot_in->buf, iboot_in->len, &value, sizeof(value));
 	if(!ldr_xref) {
 		printf("%s: Unable to find an LDR xref for 0x%X!\n", __FUNCTION__, value);
 		return 0;
@@ -117,14 +118,14 @@ bool has_kernel_load(struct iboot_img* iboot_in) {
 
 bool has_recovery_console(struct iboot_img* iboot_in) {
 	void* entering_recovery_str = memstr(iboot_in->buf, iboot_in->len, ENTERING_RECOVERY_CONSOLE);
-	
+
 	return (bool) (entering_recovery_str != NULL);
 }
 
 void* iboot_memmem(struct iboot_img* iboot_in, void* pat) {
-	uint32_t new_pat = (uint32_t) GET_IBOOT_ADDR(iboot_in, pat);
-	
-	return memmem(iboot_in->buf, iboot_in->len, &new_pat, sizeof(uint32_t));
+	uint32_t new_pat = (uintptr_t) GET_IBOOT_ADDR(iboot_in, pat);
+
+	return (void*) memmem(iboot_in->buf, iboot_in->len, &new_pat, sizeof(uint32_t));
 }
 
 bool is_BW_insn(void* offset) {
@@ -208,8 +209,23 @@ void* ldr_to(const void* loc) {
 	return NULL;
 }
 
+void* _memmem(const void* mem, int size, const void* pat, int size2) {
+	char* cmem = (char*)mem;
+	const char* cpat = (const char*)pat;
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size2; ++j) {
+			if (cmem[i + j] != cpat[j])
+				goto next;
+		}
+		return (void*)(cmem + i);
+	next:
+		continue;
+	}
+	return NULL;
+}
+
 void* memstr(const void* mem, size_t size, const char* str) {
-	return memmem(mem, size, str, strlen(str));
+	return (void*) memmem(mem, size, str, strlen(str));
 }
 
 void* pattern_search(const void* addr, int len, int pattern, int mask, int step) {
@@ -268,14 +284,14 @@ void* resolve_bl32(const void* bl) {
 	jump |= exts.x;
 	jump <<= 7;
 	jump >>= 7;
-	
+
 	return (void*) (bl + 4 + jump);
 }
 
 void set_MOVT_W_insn_val(void* offset, uint8_t rd, uint16_t val) {
 	struct arm32_thumb_MOVT_W* movt_w = (struct arm32_thumb_MOVT_W*) offset;
 	memset(movt_w, 0, sizeof(struct arm32_thumb_MOVT_W));
-	
+
 	movt_w->pad0 = 0x2C;
 	movt_w->pad1 = 0x1E;
 	movt_w->rd = rd;
@@ -284,7 +300,7 @@ void set_MOVT_W_insn_val(void* offset, uint8_t rd, uint16_t val) {
 	movt_w->imm3 = (val >> 8);
 	val &= ~(movt_w->imm3 << 8);
 	movt_w->imm8 = val;
-	
+
 	if(get_MOVT_W_val(movt_w) != val) {
 		movt_w->i = 1;
 	}
@@ -293,7 +309,7 @@ void set_MOVT_W_insn_val(void* offset, uint8_t rd, uint16_t val) {
 void set_MOVW_insn_val(void* offset, uint8_t rd, uint16_t val) {
 	struct arm32_thumb_MOVW* movw = (struct arm32_thumb_MOVW*) offset;
 	memset(movw, 0, sizeof(struct arm32_thumb_MOVW));
-	
+
 	movw->pad0 = 0x24;
 	movw->pad1 = 0x1E;
 	movw->rd = rd;
@@ -302,7 +318,7 @@ void set_MOVW_insn_val(void* offset, uint8_t rd, uint16_t val) {
 	movw->imm3 = (val >> 8);
 	val &= ~(movw->imm3 << 8);
 	movw->imm8 = val;
-	
+
 	if(get_MOVW_val(movw) != val) {
 		movw->i = 1;
 	}

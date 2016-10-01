@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
 
 	memset(&iboot_in, 0, sizeof(iboot_in));
 
-	if(argc < 2) {
+	if(argc < 3) {
 		printf("Usage: %s <iboot_in> <iboot_out> [args]\n", argv[0]);
 		printf("\t-b <str>\tApply custom boot args.\n");
 		printf("\t-c <cmd> <ptr>\tChange a command handler's pointer (hex).\n");
