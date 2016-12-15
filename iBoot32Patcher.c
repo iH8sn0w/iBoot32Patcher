@@ -91,7 +91,6 @@ int main(int argc, char** argv) {
 	}
 	
 	fread(iboot_in.buf, 1, iboot_in.len, fp);
-	fflush(fp);
 	fclose(fp);
 	
 	uint32_t image_magic = *(uint32_t*)iboot_in.buf;
