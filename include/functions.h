@@ -24,7 +24,7 @@
 #include <include/iBoot32Patcher.h>
 
 #define ENTERING_RECOVERY_CONSOLE "Entering recovery mode, starting command prompt"
-#define KERNELCACHE_PREP_STRING "kernelcache prepped"
+#define KERNELCACHE_PREP_STRING "Attempting to validate kernelcache"
 
 #ifndef memmem
 #define memmem _memmem
